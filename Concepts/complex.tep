@@ -1,0 +1,32 @@
+> tep::langmode = Central
+> tep::ext = tep-central
+
+I namespace Math:
+
+    I class Complex:
+
+        I float Real: prop[get,private set]
+        I float Imaginary: prop[get,private set]
+
+        I Complex: public constructor
+            init: Real = 0
+            init: Imaginary = 0
+
+        I Complex operator+ : public operator
+            p: Complex rhs
+
+            Complex temp
+            
+            temp.Real = this.Real + rhs.Real
+            temp.Imaginary = this.Imaginary + rhs.Imaginary
+
+            return temp
+            
+        I Complex operator-: public operator
+            p: Complex rhs
+            
+            Complex temp
+            temp.Real = this.Real - rhs.Real
+            temp.Imaginary = this.Imaginary - rhs.Imaginary
+
+            return temp
