@@ -1,32 +1,301 @@
 > tep::langmode = Central
 > tep::ext = tep-central
 
+> central::headerdef = EXAMPLE_COMPLEX
+
 I namespace Math:
 
-    I class Complex:
+    I class Complex<T>:
+        template: class T
 
-        I float Real: prop[get,private set]
-        I float Imaginary: prop[get,private set]
+        I T Real: prop[get,private set]
+        I T Imaginary: prop[get,private set]
+        //Constructors
+        I Complex: public constructor
+            p: const ref T Real = T()
+            p: const ref T Imaginary = T()
+
+            init: Real = Real
+            init: Imaginary = Imaginary
+            
+        I Complex: public constructor
+            p: const ref Complex other
+
+            init: Real = other.Real
+            init: Imaginary = other.Imaginary
 
         I Complex: public constructor
-            init: Real = 0
-            init: Imaginary = 0
+            template: class X
+            p: const ref Complex<X> other
 
-        I Complex operator+ : public operator
-            p: Complex rhs
+            init: Real = other.Real
+            init: Imaginary = other.Imaginary
 
-            Complex temp
+        //Scaler operations
+        I ref Complex<T> operator= : public operator
+            variation:
+                p: const ref T other
+
+                Real = other
+                Imaginary = T()
+                return deref this
+
+            variation:
+                template: typename X
+                p: const ref Complex<X> other
+
+                Real = other.Real
+                Imaginary = other.Imaginary
+                return deref this
+
+        I ref Complex<T> operator+= : public operator
+            variation:
+                p: const ref T other
+
+                Real += other
+                return deref this
+
+            variation:
+                template: typename X
+                p: const ref Complex<X> other
+
+                Real += other.Real
+                Imaginary += other.Imaginary
+                return deref this
+
             
-            temp.Real = this.Real + rhs.Real
-            temp.Imaginary = this.Imaginary + rhs.Imaginary
+
+        I ref Complex<T> operator-= : public operator
+            variation:
+                p: const ref T other
+
+                Real -= other
+                return deref this
+
+            variation:
+                template: typename X
+                p: const ref Complex<X> other
+
+                Real -= other.Real
+                Imaginary -= other.Imaginary
+                return deref this
+
+            
+                
+        I ref Complex<T> operator*= : public operator
+            variation:
+                p: const ref T other
+
+                Real *= other
+                Imaginary *= other
+                return deref this
+
+            variation:
+                template: typename X
+                p: const ref Complex<X> other
+
+                Complex<T> temp
+                temp.Real = Real * other.Real - Imaginary * other.Imaginary
+                temp.Imaginary = Real * other.Imaginary + Imaginary * other.Real
+
+                Real = temp.Real
+                Imaginary = temp.Imaginary
+
+                return deref this
+
+        I ref Complex<T> operator/= : public operator
+            variation:
+                p: const ref T other
+
+                Real /= other
+                Imaginary /= other
+                return deref this
+
+            variation:
+                template: typename X
+                p: const ref Complex<X> other
+
+                T denominator = other.Real * other.Real + other.Imaginary * other.Imaginary
+
+                T reNumerator = Real * other.Real + Imaginary * other.Imaginary
+                T imNumerator = Imaginary * other.Real - Real * other.Imaginary
+
+                Real = reNumerator / denominator
+                Imaginary = imNumerator / denominator
+
+                return deref this
+
+        
+        //Copy assignment operator
+        I ref Complex operator= : public operator = default
+            p: ref Complex other
+
+    I class Complex<float>:
+        template:
+    I class Complex<double>:
+        template:
+    I class Complex<long double>:
+        template:
+
+    I Complex<T> operator+: public inline operator
+        template: typename T
+        variation:
+            p: const ref Complex<T> lhs
+            p: const ref Complex<T> rhs
+
+            Complex<T> temp = lhs
+            temp += rhs
 
             return temp
-            
-        I Complex operator-: public operator
-            p: Complex rhs
-            
-            Complex temp
-            temp.Real = this.Real - rhs.Real
-            temp.Imaginary = this.Imaginary - rhs.Imaginary
+
+        variation:
+            p: const ref Complex<T> lhs
+            p: const ref T rhs
+
+            Complex<T> temp = lhs
+            temp += rhs
 
             return temp
+
+        variation:
+            p: const ref T lhs
+            p: const ref Complex<T> rhs
+
+            Complex<T> temp = rhs
+            temp += lhs
+
+            return temp
+        
+    I Complex<T> operator-: public inline operator
+        template: typename T
+        variation:
+            p: const ref Complex<T> lhs
+            p: const ref Complex<T> rhs
+
+            Complex<T> temp = lhs
+            temp -= rhs
+
+            return temp
+
+        variation:
+            p: const ref Complex<T> lhs
+            p: const ref T rhs
+
+            Complex<T> temp = lhs
+            temp -= rhs
+
+            return temp
+
+        variation:
+            p: const ref T lhs
+            p: const ref Complex<T> rhs
+
+            Complex<T> temp = -rhs
+            temp += lhs
+
+            return temp
+    I Complex<T> operator*: public inline operator
+        template: typename T
+        variation:
+            p: const ref Complex<T> lhs
+            p: const ref Complex<T> rhs
+
+            Complex<T> temp = lhs
+            temp *= rhs
+            return temp
+
+        variation:
+            p: const ref Complex<T> lhs
+            p: const ref T rhs
+
+            Complex<T> temp = lhs
+            temp *= rhs
+            return temp
+
+        variation:
+            p: const ref T lhs
+            p: const ref Complex<T> rhs
+
+            Complex<T> temp = rhs
+            temp *= lhs
+            return temp
+
+    I Complex<T> operator/: public inline operator
+        template: typename T
+        variation:
+            p: const ref Complex<T> lhs
+            p: const ref Complex<T> rhs
+
+            Complex<T> temp = lhs
+            temp /= rhs
+            return temp
+
+        variation:
+            p: const ref Complex<T> lhs
+            p: const ref T rhs
+
+            Complex<T> temp = lhs
+            temp /= rhs
+            return temp
+
+        variation:
+            p: const ref T lhs
+            p: const ref Complex<T> rhs
+
+            Complex<T> temp = lhs
+            temp /= lhs
+            return temp
+
+    //Unary operators
+    I Complex<T> operator+: public inline operator
+        template: typename T
+        p: const ref Complex<T> rhs
+
+        return rhs
+
+    I Complex<T> operator-: public inline operator
+        template: typename T
+        p: const ref Complex<T> rhs
+
+        return Complex<T>(-rhs.Real, -rhs.Imaginary)
+    
+    //Comparision operators
+    I bool operator==: public inline operator
+        template: typename T
+        variation:
+            p: const ref Complex<T> lhs
+            p: const ref Complex<T> rhs
+
+            return lhs.Real == rhs.Real && lhs.Imaginary == rhs.Imaginary
+
+        variation:
+            p: const ref Complex<T> lhs
+            p: const ref T rhs
+
+            return lhs.Real == rhs && lhs.Imaginary == T()
+
+        variation:
+            p: const ref T lhs
+            p: const ref Complex<T> rhs
+
+            return lhs == rhs.Real && T() == rhs.Imaginary
+
+    I bool operator!=: public inline operator
+        template: typename T
+        variation:
+            p: const ref Complex<T> lhs
+            p: const ref Complex<T> rhs
+
+            return lhs.Real != rhs.Real || lhs.Imaginary != rhs.Imaginary
+
+        variation:
+            p: const ref Complex<T> lhs
+            p: const ref T rhs
+
+            return lhs.Real != rhs || lhs.Imaginary != T()
+
+        variation:
+            p: const ref T lhs
+            p: const ref Complex<T> rhs
+
+            return lhs != rhs.Real || T() != rhs.Imaginary
